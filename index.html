@@ -1,13 +1,635 @@
 <!DOCTYPE html>
+
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Love Nails POS</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💅</text></svg>" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Love Nails POS</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0c0b0f;--s1:#17151d;--s2:#1f1c28;--s3:#2a2636;--bd:#302b42;--pk:#f472b6;--gr:#4ade80;--yw:#fbbf24;--rd:#f87171;--bl:#60a5fa;--pp:#a78bfa;--tx:#f0eaf8;--t2:#9d97b0;--t3:#56516a}
+body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;font-size:14px}
+.app{display:flex;height:100vh;overflow:hidden}
+.side{width:210px;min-width:210px;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column}
+.logo{padding:20px;border-bottom:1px solid var(--bd)}
+.logo h1{font-family:'DM Serif Display',serif;font-size:20px;color:var(--pk)}
+.logo p{font-size:10px;color:var(--t3);letter-spacing:2px;text-transform:uppercase}
+.nav{flex:1;padding:10px 0}
+.ni{display:flex;align-items:center;gap:10px;padding:10px 18px;color:var(--t2);cursor:pointer;font-size:13px;font-weight:500;border-left:3px solid transparent;transition:all .15s}
+.ni:hover{color:var(--tx);background:var(--s2)}
+.ni.on{color:var(--pk);border-left-color:var(--pk);background:rgba(244,114,182,.07)}
+.foot{padding:14px 18px;border-top:1px solid var(--bd);font-size:11px;color:var(--t3)}
+.main{flex:1;overflow-y:auto}
+.pg{padding:24px 28px;max-width:1100px}
+.pgw{padding:24px 28px}
+h2{font-family:'DM Serif Display',serif;font-size:26px;margin-bottom:3px}
+.sub{color:var(--t2);font-size:13px;margin-bottom:22px}
+.row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:18px}
+.ct{font-weight:700;font-size:14px;margin-bottom:13px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:11px;margin-bottom:22px}
+.stat{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:15px 17px}
+.sl{font-size:10px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
+.sv{font-size:24px;font-weight:700}
+.ss{font-size:12px;color:var(--t2);margin-top:3px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 15px;border-radius:9px;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.bp{background:var(--pk);color:#fff}
+.bp:hover{background:#ec4899}
+.bp:disabled{opacity:.4;cursor:not-allowed}
+.bg{background:var(--s2);color:var(--tx);border:1px solid var(--bd)}
+.bg:hover{background:var(--s3)}
+.bd2{background:rgba(248,113,113,.12);color:var(--rd);border:1px solid rgba(248,113,113,.25)}
+.bsm{padding:5px 11px;font-size:12px}
+input,select,textarea{background:var(--s2);border:1px solid var(--bd);color:var(--tx);border-radius:9px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;width:100%;transition:border .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--pk)}
+input::placeholder{color:var(--t3)}
+select option{background:var(--s2)}
+label{font-size:12px;color:var(--t2);display:block;margin-bottom:4px;font-weight:500}
+input[type=color]{height:38px;padding:2px 4px;cursor:pointer}
+.badge{display:inline-block;padding:3px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bg2{background:rgba(74,222,128,.12);color:var(--gr)}
+.br2{background:rgba(248,113,113,.12);color:var(--rd)}
+.by{background:rgba(251,191,36,.12);color:var(--yw)}
+.bpp{background:rgba(167,139,250,.12);color:var(--pp)}
+.bbl{background:rgba(96,165,250,.12);color:var(--bl)}
+.bgr{background:rgba(156,163,175,.1);color:var(--t2)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:9px 13px;font-size:10px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--bd)}
+td{padding:11px 13px;border-bottom:1px solid rgba(48,43,66,.5);vertical-align:middle;font-size:13px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.015)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px;backdrop-filter:blur(4px)}
+.mod{background:var(--s1);border:1px solid var(--bd);border-radius:18px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:24px}
+.mt2{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:18px}
+.mf{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--bd)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.full{grid-column:1/-1}
+.tl{display:grid;grid-template-columns:1fr 350px;gap:18px;align-items:start}
+.svcg{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:7px}
+.svb{background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:11px 10px;cursor:pointer;transition:all .15s}
+.svb:hover{border-color:var(--pk);background:rgba(244,114,182,.05)}
+.sn{font-size:12px;font-weight:600;color:var(--tx)}
+.sp{font-size:13px;color:var(--pk);margin-top:3px;font-weight:700}
+.st2{font-size:11px;color:var(--t3);margin-top:2px}
+.cf{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.cb{padding:4px 11px;border-radius:99px;border:1px solid var(--bd);background:transparent;color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.cb.on{color:#111}
+.bill{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:18px;position:sticky;top:20px}
+.bi{display:flex;align-items:flex-start;gap:8px;padding:9px 0;border-bottom:1px solid rgba(48,43,66,.4)}
+.bi:last-of-type{border-bottom:none}
+.bii{flex:1;min-width:0}
+.bin{font-size:13px;font-weight:600}
+.bie{font-size:11px;color:var(--t2);margin-top:2px;display:flex;align-items:center;gap:4px}
+.bip{font-size:14px;font-weight:700;color:var(--pk);white-space:nowrap}
+.rb{color:var(--t3);cursor:pointer;padding:2px;border:none;background:none}
+.rb:hover{color:var(--rd)}
+.btot{margin-top:13px;padding-top:11px;border-top:1px solid var(--bd)}
+.brow{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:13px;color:var(--t2)}
+.brow.tot{font-size:18px;font-weight:700;color:var(--tx);margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)}
+.pmg{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+.pmb{padding:8px;border-radius:9px;border:1.5px solid var(--bd);background:var(--s2);color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;text-align:center;font-family:'DM Sans',sans-serif;transition:all .15s}
+.pmb.sel{border-color:var(--pk);color:var(--pk);background:rgba(244,114,182,.07)}
+.ea{width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#111;flex-shrink:0}
+.ac{background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:12px 15px;margin-bottom:8px;display:flex;gap:12px;align-items:center}
+.ld{display:flex;align-items:center;justify-content:center;height:180px;color:var(--t3);gap:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sp2{width:18px;height:18px;border:2px solid var(--bd);border-top-color:var(--pk);border-radius:50%;animation:spin .7s linear infinite}
+.toast{position:fixed;bottom:22px;right:22px;z-index:300;background:var(--s3);border:1px solid var(--bd);border-radius:9px;padding:11px 15px;font-size:13px;display:flex;align-items:center;gap:8px}
+.empty{color:var(--t3);font-size:13px;text-align:center;padding:26px 0}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useCallback} = React;
+const sb = supabase.createClient(
+  'https://xnmqhfyiuhygjhvyxzeu.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhubXFoZnlpdWh5Z2podnl4emV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1MTQ5NzQsImV4cCI6MjA5MzA5MDk3NH0.rWr0_fB33ohb8c1ybLHcR0UUik0OIHRy5O1WJFNeLAk'
+);
+
+const CATS=[{id:‘c1’,name:‘Manicure’,color:’#f9a8d4’},{id:‘c2’,name:‘Pedicure’,color:’#86efac’},{id:‘c3’,name:‘Acrylic’,color:’#93c5fd’},{id:‘c4’,name:‘Gel X’,color:’#c4b5fd’},{id:‘c5’,name:‘Dipping’,color:’#fcd34d’},{id:‘c6’,name:‘Add-on’,color:’#e5e7eb’}];
+const SVCS=[{id:‘s1’,c:‘c1’,name:‘Regular Manicure’,price:25,mins:30},{id:‘s2’,c:‘c1’,name:‘Gel Manicure’,price:45,mins:45},{id:‘s3’,c:‘c1’,name:‘Spa Manicure’,price:35,mins:40},{id:‘s4’,c:‘c2’,name:‘Regular Pedicure’,price:35,mins:40},{id:‘s5’,c:‘c2’,name:‘Deluxe Pedicure’,price:50,mins:60},{id:‘s6’,c:‘c2’,name:‘Spa Pedicure’,price:65,mins:75},{id:‘s7’,c:‘c3’,name:‘Full Set Acrylic’,price:50,mins:60},{id:‘s8’,c:‘c3’,name:‘Acrylic Fill’,price:35,mins:45},{id:‘s9’,c:‘c4’,name:‘Gel X Full Set’,price:65,mins:75},{id:‘s10’,c:‘c4’,name:‘Gel X Fill’,price:45,mins:50},{id:‘s11’,c:‘c5’,name:‘Dipping Full Set’,price:55,mins:60},{id:‘s12’,c:‘c5’,name:‘Dipping Fill’,price:40,mins:45},{id:‘s13’,c:‘c6’,name:‘French Tip’,price:10,mins:10},{id:‘s14’,c:‘c6’,name:‘Gel Polish’,price:15,mins:15},{id:‘s15’,c:‘c6’,name:‘Nail Art’,price:5,mins:5}];
+const PMS=[‘Cash’,‘Credit Card’,‘Debit Card’,‘Zelle’,‘Venmo’,‘CashApp’];
+const ASTATS=[‘Booked’,‘Confirmed’,‘Checked In’,‘Completed’,‘No-show’,‘Cancelled’];
+const SBG={Booked:‘bbl’,Confirmed:‘bpp’,‘Checked In’:‘by’,Completed:‘bg2’,‘No-show’:‘br2’,Cancelled:‘bgr’};
+const fmt=n=>’$’+Number(n||0).toFixed(2);
+const toStr=()=>new Date().toLocaleDateString(‘en-US’,{month:‘short’,day:‘numeric’,year:‘numeric’});
+
+function useToast(){
+const [toast,setToast]=useState(null);
+const show=useCallback((msg,type=‘success’)=>{setToast({msg,type});setTimeout(()=>setToast(null),3000)},[]);
+return {toast,show};
+}
+
+function Dashboard({employees}){
+const [stats,setStats]=useState({rev:0,cash:0,card:0,tips:0,count:0});
+const [empStats,setEmpStats]=useState([]);
+const [recent,setRecent]=useState([]);
+const [loading,setLoading]=useState(true);
+useEffect(()=>{load()},[]);
+async function load(){
+setLoading(true);
+const today=new Date();today.setHours(0,0,0,0);
+const {data:t}=await sb.from(‘tickets’).select(’*,ticket_items(*),ticket_tips(*),payments(*)’).eq(‘status’,‘Completed’).gte(‘created_at’,today.toISOString()).order(‘created_at’,{ascending:false});
+if(t){
+const rev=t.reduce((s,x)=>s+(x.total||0),0);
+const cash=t.reduce((s,x)=>s+(x.payments||[]).filter(p=>p.method===‘Cash’).reduce((a,b)=>a+(b.amount||0),0),0);
+const card=t.reduce((s,x)=>s+(x.payments||[]).filter(p=>[‘Credit Card’,‘Debit Card’].includes(p.method)).reduce((a,b)=>a+(b.amount||0),0),0);
+const tips=t.reduce((s,x)=>s+(x.tip_total||0),0);
+setStats({rev,cash,card,tips,count:t.length});
+setRecent(t.slice(0,5));
+const em={};
+t.forEach(x=>{
+(x.ticket_items||[]).forEach(i=>{if(!i.employee_id)return;if(!em[i.employee_id])em[i.employee_id]={name:i.employee_name,svc:0,tip:0,cnt:0};em[i.employee_id].svc+=i.price||0;em[i.employee_id].cnt++;});
+(x.ticket_tips||[]).forEach(i=>{if(!i.employee_id)return;if(!em[i.employee_id])em[i.employee_id]={name:i.employee_name,svc:0,tip:0,cnt:0};em[i.employee_id].tip+=i.amount||0;});
+});
+setEmpStats(Object.entries(em).map(([id,v])=>({id,…v,color:employees.find(e=>e.id===id)?.color||’#f472b6’})).sort((a,b)=>b.svc-a.svc));
+}
+setLoading(false);
+}
+if(loading)return <div className="ld"><div className="sp2"/><span>Loading…</span></div>;
+return(
+<div className="pg">
+<h2>Dashboard</h2><div className="sub">{toStr()}</div>
+<div className="stats">
+{[{l:‘Revenue Today’,v:fmt(stats.rev),c:‘var(–pk)’,s:`${stats.count} tickets`},{l:‘Cash’,v:fmt(stats.cash),c:‘var(–gr)’},{l:‘Card’,v:fmt(stats.card),c:‘var(–bl)’},{l:‘Tips’,v:fmt(stats.tips),c:‘var(–yw)’}].map(s=>(
+<div className="stat" key={s.l}><div className="sl">{s.l}</div><div className="sv" style={{color:s.c}}>{s.v}</div>{s.s&&<div className="ss">{s.s}</div>}</div>
+))}
+</div>
+<div style={{display:‘grid’,gridTemplateColumns:‘1fr 1fr’,gap:16}}>
+<div className="card">
+<div className="ct">Employee Performance</div>
+{!empStats.length&&<div className="empty">No data today</div>}
+{empStats.map((e,i)=>(
+<div key={i} style={{display:‘flex’,alignItems:‘center’,gap:10,marginBottom:11}}>
+<span className="ea" style={{background:e.color}}>{(e.name||’?’)[0]}</span>
+<div style={{flex:1}}><div style={{fontWeight:600,fontSize:13}}>{e.name}</div><div style={{fontSize:11,color:‘var(–t3)’}}>{e.cnt} svc</div></div>
+<div style={{textAlign:‘right’}}><div style={{fontWeight:700,color:‘var(–pk)’,fontSize:13}}>{fmt(e.svc)}</div><div style={{fontSize:11,color:‘var(–yw)’}}>+{fmt(e.tip)}</div></div>
+</div>
+))}
+</div>
+<div className="card">
+<div className="ct">Recent Tickets</div>
+{!recent.length&&<div className="empty">No tickets today</div>}
+{recent.map(t=>(
+<div key={t.id} style={{display:‘flex’,justifyContent:‘space-between’,alignItems:‘center’,marginBottom:10}}>
+<div><div style={{fontWeight:600,fontSize:13}}>#{t.number} {t.customer_name||‘Walk-in’}</div><div style={{fontSize:11,color:‘var(–t3)’}}>{(t.ticket_items||[]).length} item · {(t.payments||[])[0]?.method||’—’}</div></div>
+<div style={{fontWeight:700,color:‘var(–gr)’}}>{fmt(t.total)}</div>
+</div>
+))}
+</div>
+</div>
+</div>
+);
+}
+
+function NewTicket({employees,customers,showToast,onDone}){
+const [cat,setCat]=useState(‘all’);
+const [items,setItems]=useState([]);
+const [tips,setTips]=useState({});
+const [disc,setDisc]=useState(’’);
+const [pay,setPay]=useState(‘Cash’);
+const [cust,setCust]=useState(’’);
+const [walkin,setWalkin]=useState(’’);
+const [ai,setAi]=useState(null);
+const [saving,setSaving]=useState(false);
+const filtered=cat===‘all’?SVCS:SVCS.filter(s=>s.c===cat);
+const sub=items.reduce((s,i)=>s+i.price,0);
+const da=parseFloat(disc)||0;
+const tt=Object.values(tips).reduce((s,v)=>s+(parseFloat(v)||0),0);
+const total=sub-da+tt;
+const activeE=employees.filter(e=>e.active);
+const ewsvc=activeE.filter(e=>items.some(i=>i.eid===e.id));
+function addSvc(svc){const idx=items.length;setItems(p=>[…p,{…svc,eid:’’}]);setAi(idx);}
+function removeItem(i){
+const eid=items[i]?.eid;
+setItems(p=>p.filter((_,idx)=>idx!==i));
+if(eid&&!items.filter((it,idx)=>idx!==i&&it.eid===eid).length)setTips(p=>{const n={…p};delete n[eid];return n;});
+}
+async function complete(){
+if(!items.length)return showToast(‘Add at least one service.’,‘error’);
+setSaving(true);
+try{
+const cn=customers.find(c=>c.id===cust)?.name||walkin||‘Walk-in’;
+const {data:tk,error}=await sb.from(‘tickets’).insert({customer_name:cn,customer_id:cust||null,subtotal:sub,discount_amt:da,tip_total:tt,total,pay_method:pay,status:‘Completed’}).select().single();
+if(error)throw error;
+await sb.from(‘ticket_items’).insert(items.map(it=>({ticket_id:tk.id,service_name:it.name,price:it.price,employee_id:it.eid||null,employee_name:employees.find(e=>e.id===it.eid)?.name||null})));
+await sb.from(‘payments’).insert({ticket_id:tk.id,method:pay,amount:total});
+const tr=Object.entries(tips).filter(([,v])=>parseFloat(v)>0).map(([eid,v])=>({ticket_id:tk.id,employee_id:eid,employee_name:employees.find(e=>e.id===eid)?.name||null,amount:parseFloat(v)}));
+if(tr.length)await sb.from(‘ticket_tips’).insert(tr);
+showToast(‘Ticket #’+tk.number+’ completed!’);
+setItems([]);setTips({});setDisc(’’);setCust(’’);setWalkin(’’);setPay(‘Cash’);
+onDone();
+}catch(err){showToast(‘Error: ‘+err.message,‘error’);}
+setSaving(false);
+}
+return(
+<div className="pgw">
+<h2>New Ticket</h2><div className="sub">Select services then complete payment</div>
+<div className="tl">
+<div>
+<div className="card" style={{marginBottom:14}}>
+<div style={{display:‘flex’,gap:12}}>
+<div style={{flex:1}}><label>Customer</label><select value={cust} onChange={e=>setCust(e.target.value)}><option value="">Walk-in</option>{customers.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
+{!cust&&<div style={{flex:1}}><label>Name</label><input placeholder=“Optional” value={walkin} onChange={e=>setWalkin(e.target.value)}/></div>}
+</div>
+</div>
+<div className="card">
+<div className="cf">
+{[{id:‘all’,name:‘All’,color:‘var(–pk)’},…CATS].map(c=>(
+<button key={c.id} className={‘cb’+(cat===c.id?’ on’:’’)} style={cat===c.id?{background:c.color,borderColor:c.color}:{}} onClick={()=>setCat(c.id)}>{c.name}</button>
+))}
+</div>
+<div className="svcg">
+{filtered.map(s=>(
+<div key={s.id} className=“svb” onClick={()=>addSvc(s)}>
+<div className="sn">{s.name}</div>
+<div className="sp">{fmt(s.price)}</div>
+<div className="st2">{s.mins} min</div>
+</div>
+))}
+</div>
+</div>
+</div>
+<div className="bill">
+<div style={{display:‘flex’,justifyContent:‘space-between’,alignItems:‘center’,marginBottom:14}}>
+<span style={{fontFamily:”‘DM Serif Display’,serif”,fontSize:18}}>Bill</span>
+<span style={{fontSize:12,color:‘var(–t3)’}}>{items.length} item(s)</span>
+</div>
+{!items.length&&<div className="empty">Tap a service to add</div>}
+{items.map((it,i)=>{
+const emp=employees.find(e=>e.id===it.eid);
+return(
+<div key={i} className="bi">
+<div className="bii">
+<div className="bin">{it.name}</div>
+<div className="bie">{emp?<><span className="ea" style={{width:16,height:16,fontSize:9,background:emp.color}}>{emp.name[0]}</span>{emp.name}</>:<span style={{color:‘var(–rd)’,cursor:‘pointer’}} onClick={()=>setAi(i)}>Assign staff</span>}</div>
+</div>
+<div className="bip">{fmt(it.price)}</div>
+<button className=“rb” onClick={()=>removeItem(i)}>✕</button>
+</div>
+);
+})}
+{ewsvc.length>0&&(
+<div style={{marginTop:12,paddingTop:12,borderTop:‘1px solid var(–bd)’}}>
+<div style={{fontSize:10,color:‘var(–t3)’,letterSpacing:2,textTransform:‘uppercase’,marginBottom:8}}>Tips</div>
+{ewsvc.map(emp=>(
+<div key={emp.id} style={{display:‘flex’,alignItems:‘center’,gap:8,marginBottom:7}}>
+<span className="ea" style={{background:emp.color,width:26,height:26,fontSize:10}}>{emp.name[0]}</span>
+<span style={{flex:1,fontSize:13}}>{emp.name}</span>
+<input placeholder=”$0” style={{width:75}} value={tips[emp.id]||’’} onChange={e=>setTips(p=>({…p,[emp.id]:e.target.value}))}/>
+</div>
+))}
+</div>
+)}
+<div className="btot">
+<div className="brow"><span>Subtotal</span><span>{fmt(sub)}</span></div>
+<div className="brow"><span>Discount</span><input placeholder=“0” style={{width:75,textAlign:‘right’}} value={disc} onChange={e=>setDisc(e.target.value)}/></div>
+<div className="brow"><span>Tips</span><span style={{color:‘var(–yw)’}}>{fmt(tt)}</span></div>
+<div className="brow tot"><span>Total</span><span>{fmt(total)}</span></div>
+</div>
+<div style={{marginTop:16}}>
+<div style={{fontSize:10,color:‘var(–t3)’,letterSpacing:2,textTransform:‘uppercase’,marginBottom:8}}>Payment</div>
+<div className="pmg">{PMS.map(m=><button key={m} className={‘pmb’+(pay===m?’ sel’:’’)} onClick={()=>setPay(m)}>{m}</button>)}</div>
+</div>
+<button className=“btn bp” style={{width:‘100%’,marginTop:16,justifyContent:‘center’,padding:‘12px’}} disabled={saving||!items.length} onClick={complete}>
+{saving?<><div className="sp2"/>Saving…</>:‘✓ Complete Ticket’}
+</button>
+</div>
+</div>
+{ai!==null&&(
+<div className=“ov” onClick={()=>setAi(null)}>
+<div className=“mod” style={{maxWidth:360}} onClick={e=>e.stopPropagation()}>
+<div className="mt2">Assign Employee</div>
+<div style={{fontSize:13,color:‘var(–t2)’,marginBottom:16}}>For: <strong>{items[ai]?.name}</strong></div>
+<div style={{display:‘grid’,gridTemplateColumns:‘1fr 1fr’,gap:9}}>
+{activeE.map(emp=>(
+<button key={emp.id} className=“btn bg” style={{justifyContent:‘flex-start’,gap:9}} onClick={()=>{setItems(p=>p.map((it,i)=>i===ai?{…it,eid:emp.id}:it));setAi(null);}}>
+<span className="ea" style={{background:emp.color,width:26,height:26,fontSize:10}}>{emp.name[0]}</span>{emp.name}
+</button>
+))}
+</div>
+<div className="mf"><button className=“btn bg bsm” onClick={()=>setAi(null)}>Skip</button></div>
+</div>
+</div>
+)}
+</div>
+);
+}
+
+function Appointments({employees,showToast}){
+const [appts,setAppts]=useState([]);
+const [loading,setLoading]=useState(true);
+const [show,setShow]=useState(false);
+const [form,setForm]=useState({time:’’,customer_name:’’,service:’’,employee_id:’’,notes:’’});
+const [saving,setSaving]=useState(false);
+useEffect(()=>{load()},[]);
+async function load(){
+setLoading(true);
+const today=new Date();today.setHours(0,0,0,0);
+const {data}=await sb.from(‘appointments’).select(’*’).gte(‘created_at’,today.toISOString()).order(‘time’,{ascending:true});
+setAppts(data||[]);setLoading(false);
+}
+async function save(){
+if(!form.time||!form.customer_name)return showToast(‘Fill time and name’,‘error’);
+setSaving(true);
+const {data,error}=await sb.from(‘appointments’).insert({…form,status:‘Booked’}).select().single();
+if(error){showToast(‘Error: ‘+error.message,‘error’);setSaving(false);return;}
+setAppts(p=>[…p,data]);setForm({time:’’,customer_name:’’,service:’’,employee_id:’’,notes:’’});setShow(false);showToast(‘Added!’);setSaving(false);
+}
+async function updateStatus(id,status){
+await sb.from(‘appointments’).update({status}).eq(‘id’,id);
+setAppts(p=>p.map(a=>a.id===id?{…a,status}:a));
+}
+async function del(id){
+if(!confirm(‘Delete?’))return;
+await sb.from(‘appointments’).delete().eq(‘id’,id);
+setAppts(p=>p.filter(a=>a.id!==id));showToast(‘Deleted.’);
+}
+if(loading)return <div className="ld"><div className="sp2"/><span>Loading…</span></div>;
+return(
+<div className="pg">
+<div className="row"><div><h2>Appointments</h2><div className="sub">{toStr()}</div></div><button className=“btn bp” onClick={()=>setShow(true)}>+ New</button></div>
+{!appts.length&&<div className="card"><div className="empty">No appointments today</div></div>}
+{appts.map(a=>{
+const emp=employees.find(e=>e.id===a.employee_id);
+return(
+<div key={a.id} className="ac">
+<div style={{fontWeight:700,color:‘var(–pk)’,minWidth:65,fontSize:14}}>{a.time}</div>
+<div style={{width:3,height:40,borderRadius:2,background:emp?.color||‘var(–bd)’,flexShrink:0}}/>
+<div style={{flex:1}}><div style={{fontWeight:600}}>{a.customer_name}</div><div style={{fontSize:12,color:‘var(–t2)’}}>{a.service||’—’}{emp?’ · ‘+emp.name:’’}</div></div>
+<span className={’badge ’+SBG[a.status]}>{a.status}</span>
+<select style={{width:130,fontSize:12,padding:‘5px 8px’}} value={a.status} onChange={e=>updateStatus(a.id,e.target.value)}>{ASTATS.map(s=><option key={s}>{s}</option>)}</select>
+<button className=“btn bd2 bsm” onClick={()=>del(a.id)}>✕</button>
+</div>
+);
+})}
+{show&&(
+<div className=“ov” onClick={()=>setShow(false)}>
+<div className=“mod” onClick={e=>e.stopPropagation()}>
+<div className="mt2">New Appointment</div>
+<div className="grid2">
+<div><label>Time *</label><input placeholder=“10:00 AM” value={form.time} onChange={e=>setForm({…form,time:e.target.value})}/></div>
+<div><label>Customer *</label><input placeholder=“Name” value={form.customer_name} onChange={e=>setForm({…form,customer_name:e.target.value})}/></div>
+<div><label>Service</label><select value={form.service} onChange={e=>setForm({…form,service:e.target.value})}><option value="">Select</option>{SVCS.map(s=><option key={s.id}>{s.name}</option>)}</select></div>
+<div><label>Employee</label><select value={form.employee_id} onChange={e=>setForm({…form,employee_id:e.target.value})}><option value="">Any</option>{employees.filter(e=>e.active).map(e=><option key={e.id} value={e.id}>{e.name}</option>)}</select></div>
+<div className="full"><label>Notes</label><textarea rows={2} value={form.notes} onChange={e=>setForm({…form,notes:e.target.value})}/></div>
+</div>
+<div className="mf"><button className=“btn bg” onClick={()=>setShow(false)}>Cancel</button><button className="btn bp" disabled={saving} onClick={save}>{saving?‘Saving…’:‘Save’}</button></div>
+</div>
+</div>
+)}
+</div>
+);
+}
+
+function Customers({showToast}){
+const [list,setList]=useState([]);
+const [loading,setLoading]=useState(true);
+const [q,setQ]=useState(’’);
+const [show,setShow]=useState(false);
+const [edit,setEdit]=useState(null);
+const [form,setForm]=useState({name:’’,phone:’’,notes:’’,allergies:’’});
+const [saving,setSaving]=useState(false);
+useEffect(()=>{load()},[]);
+async function load(){setLoading(true);const {data}=await sb.from(‘customers’).select(’*’).order(‘name’);setList(data||[]);setLoading(false);}
+function openNew(){setEdit(null);setForm({name:’’,phone:’’,notes:’’,allergies:’’});setShow(true);}
+function openEdit(c){setEdit(c);setForm({name:c.name,phone:c.phone||’’,notes:c.notes||’’,allergies:c.allergies||’’});setShow(true);}
+async function save(){
+if(!form.name)return showToast(‘Name required’,‘error’);
+setSaving(true);
+if(edit){await sb.from(‘customers’).update(form).eq(‘id’,edit.id);setList(p=>p.map(c=>c.id===edit.id?{…c,…form}:c));showToast(‘Updated!’);}
+else{const {data}=await sb.from(‘customers’).insert(form).select().single();setList(p=>[…p,data].sort((a,b)=>a.name.localeCompare(b.name)));showToast(‘Added!’);}
+setShow(false);setSaving(false);
+}
+async function del(id){if(!confirm(‘Delete?’))return;await sb.from(‘customers’).delete().eq(‘id’,id);setList(p=>p.filter(c=>c.id!==id));showToast(‘Deleted.’);}
+const filtered=list.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||(c.phone||’’).includes(q));
+if(loading)return <div className="ld"><div className="sp2"/><span>Loading…</span></div>;
+return(
+<div className="pg">
+<div className="row"><div><h2>Customers</h2><div className="sub">{list.length} total</div></div><button className="btn bp" onClick={openNew}>+ New</button></div>
+<div style={{marginBottom:14}}><input placeholder=“Search…” value={q} onChange={e=>setQ(e.target.value)}/></div>
+<div className="card">
+<table>
+<thead><tr><th>Name</th><th>Phone</th><th>Notes</th><th>Allergies</th><th></th></tr></thead>
+<tbody>
+{!filtered.length&&<tr><td colSpan={5}><div className="empty">No results</div></td></tr>}
+{filtered.map(c=>(
+<tr key={c.id}>
+<td style={{fontWeight:600}}>{c.name}</td>
+<td style={{color:‘var(–t2)’}}>{c.phone||’—’}</td>
+<td style={{color:‘var(–t2)’,maxWidth:180,overflow:‘hidden’,textOverflow:‘ellipsis’,whiteSpace:‘nowrap’}}>{c.notes||’—’}</td>
+<td>{c.allergies?<span className="badge br2">{c.allergies}</span>:’—’}</td>
+<td><div style={{display:‘flex’,gap:6}}><button className=“btn bg bsm” onClick={()=>openEdit(c)}>✎</button><button className=“btn bd2 bsm” onClick={()=>del(c.id)}>✕</button></div></td>
+</tr>
+))}
+</tbody>
+</table>
+</div>
+{show&&(
+<div className=“ov” onClick={()=>setShow(false)}>
+<div className=“mod” onClick={e=>e.stopPropagation()}>
+<div className="mt2">{edit?‘Edit’:‘New’} Customer</div>
+<div className="grid2">
+<div><label>Name *</label><input value={form.name} onChange={e=>setForm({…form,name:e.target.value})}/></div>
+<div><label>Phone</label><input value={form.phone} onChange={e=>setForm({…form,phone:e.target.value})}/></div>
+<div className="full"><label>Notes</label><textarea rows={2} value={form.notes} onChange={e=>setForm({…form,notes:e.target.value})}/></div>
+<div className="full"><label>Allergies</label><input value={form.allergies} onChange={e=>setForm({…form,allergies:e.target.value})}/></div>
+</div>
+<div className="mf"><button className=“btn bg” onClick={()=>setShow(false)}>Cancel</button><button className="btn bp" disabled={saving} onClick={save}>{saving?‘Saving…’:‘Save’}</button></div>
+</div>
+</div>
+)}
+</div>
+);
+}
+
+function Employees({employees,setEmployees,showToast}){
+const [show,setShow]=useState(false);
+const [edit,setEdit]=useState(null);
+const [form,setForm]=useState({name:’’,phone:’’,role:‘Staff’,commission_rate:’’,color:’#f472b6’,active:true});
+const [saving,setSaving]=useState(false);
+function openNew(){setEdit(null);setForm({name:’’,phone:’’,role:‘Staff’,commission_rate:’’,color:’#f472b6’,active:true});setShow(true);}
+function openEdit(e){setEdit(e);setForm({name:e.name,phone:e.phone||’’,role:e.role,commission_rate:e.commission_rate||’’,color:e.color||’#f472b6’,active:e.active});setShow(true);}
+async function save(){
+if(!form.name)return showToast(‘Name required’,‘error’);
+setSaving(true);
+const p={…form,commission_rate:parseFloat(form.commission_rate)||null};
+if(edit){await sb.from(‘employees’).update(p).eq(‘id’,edit.id);setEmployees(prev=>prev.map(e=>e.id===edit.id?{…e,…p}:e));showToast(‘Updated!’);}
+else{const {data}=await sb.from(‘employees’).insert(p).select().single();setEmployees(prev=>[…prev,data]);showToast(‘Added!’);}
+setShow(false);setSaving(false);
+}
+async function toggle(emp){
+const active=!emp.active;
+await sb.from(‘employees’).update({active}).eq(‘id’,emp.id);
+setEmployees(prev=>prev.map(e=>e.id===emp.id?{…e,active}:e));
+showToast(active?emp.name+’ activated.’:emp.name+’ deactivated.’);
+}
+return(
+<div className="pg">
+<div className="row"><div><h2>Employees</h2><div className="sub">{employees.filter(e=>e.active).length} active</div></div><button className="btn bp" onClick={openNew}>+ New</button></div>
+<div className="card">
+<table>
+<thead><tr><th>Name</th><th>Role</th><th>Phone</th><th>Commission</th><th>Status</th><th></th></tr></thead>
+<tbody>
+{!employees.length&&<tr><td colSpan={6}><div className="empty">No employees</div></td></tr>}
+{employees.map(emp=>(
+<tr key={emp.id}>
+<td><div style={{display:‘flex’,alignItems:‘center’,gap:10}}><span className=“ea” style={{background:emp.color||’#f472b6’}}>{emp.name[0]}</span><span style={{fontWeight:600}}>{emp.name}</span></div></td>
+<td><span className={‘badge ‘+(emp.role===‘Admin’?‘bpp’:emp.role===‘Manager’?‘bbl’:‘bgr’)}>{emp.role}</span></td>
+<td style={{color:‘var(–t2)’}}>{emp.phone||’—’}</td>
+<td style={{color:‘var(–t2)’}}>{emp.commission_rate?emp.commission_rate+’%’:’—’}</td>
+<td><span className={’badge ’+(emp.active?‘bg2’:‘br2’)}>{emp.active?‘Active’:‘Inactive’}</span></td>
+<td><div style={{display:‘flex’,gap:6}}><button className=“btn bg bsm” onClick={()=>openEdit(emp)}>✎</button><button className=“btn bg bsm” onClick={()=>toggle(emp)}>{emp.active?‘Off’:‘On’}</button></div></td>
+</tr>
+))}
+</tbody>
+</table>
+</div>
+{show&&(
+<div className=“ov” onClick={()=>setShow(false)}>
+<div className=“mod” onClick={e=>e.stopPropagation()}>
+<div className="mt2">{edit?‘Edit’:‘New’} Employee</div>
+<div className="grid2">
+<div><label>Name *</label><input value={form.name} onChange={e=>setForm({…form,name:e.target.value})}/></div>
+<div><label>Phone</label><input value={form.phone} onChange={e=>setForm({…form,phone:e.target.value})}/></div>
+<div><label>Role</label><select value={form.role} onChange={e=>setForm({…form,role:e.target.value})}><option>Admin</option><option>Manager</option><option>Staff</option></select></div>
+<div><label>Commission %</label><input placeholder=“60” value={form.commission_rate} onChange={e=>setForm({…form,commission_rate:e.target.value})}/></div>
+<div><label>Color</label><input type=“color” value={form.color} onChange={e=>setForm({…form,color:e.target.value})}/></div>
+</div>
+<div className="mf"><button className=“btn bg” onClick={()=>setShow(false)}>Cancel</button><button className="btn bp" disabled={saving} onClick={save}>{saving?‘Saving…’:‘Save’}</button></div>
+</div>
+</div>
+)}
+</div>
+);
+}
+
+function Reports({employees}){
+const [range,setRange]=useState(‘Today’);
+const [tickets,setTickets]=useState([]);
+const [loading,setLoading]=useState(true);
+useEffect(()=>{load()},[range]);
+async function load(){
+setLoading(true);
+const now=new Date();let from=new Date();
+if(range===‘Today’){from.setHours(0,0,0,0);}
+else if(range===‘This Week’){const d=now.getDay();from.setDate(now.getDate()-d);from.setHours(0,0,0,0);}
+else{from=new Date(now.getFullYear(),now.getMonth(),1);}
+const {data}=await sb.from(‘tickets’).select(’*,ticket_items(*),ticket_tips(*),payments(*)’).eq(‘status’,‘Completed’).gte(‘created_at’,from.toISOString()).order(‘created_at’,{ascending:false});
+setTickets(data||[]);setLoading(false);
+}
+const rev=tickets.reduce((s,t)=>s+(t.total||0),0);
+const tips=tickets.reduce((s,t)=>s+(t.tip_total||0),0);
+const cash=tickets.reduce((s,t)=>s+(t.payments||[]).filter(p=>p.method===‘Cash’).reduce((a,b)=>a+(b.amount||0),0),0);
+const card=tickets.reduce((s,t)=>s+(t.payments||[]).filter(p=>[‘Credit Card’,‘Debit Card’].includes(p.method)).reduce((a,b)=>a+(b.amount||0),0),0);
+const zelle=tickets.reduce((s,t)=>s+(t.payments||[]).filter(p=>p.method===‘Zelle’).reduce((a,b)=>a+(b.amount||0),0),0);
+const venmo=tickets.reduce((s,t)=>s+(t.payments||[]).filter(p=>p.method===‘Venmo’).reduce((a,b)=>a+(b.amount||0),0),0);
+const em={};
+tickets.forEach(t=>{
+(t.ticket_items||[]).forEach(i=>{if(!i.employee_id)return;if(!em[i.employee_id])em[i.employee_id]={name:i.employee_name,svc:0,tip:0,cnt:0};em[i.employee_id].svc+=i.price||0;em[i.employee_id].cnt++;});
+(t.ticket_tips||[]).forEach(i=>{if(!i.employee_id)return;if(!em[i.employee_id])em[i.employee_id]={name:i.employee_name,svc:0,tip:0,cnt:0};em[i.employee_id].tip+=i.amount||0;});
+});
+const es=Object.entries(em).map(([id,v])=>({id,…v,color:employees.find(e=>e.id===id)?.color||‘var(–pk)’})).sort((a,b)=>b.svc-a.svc);
+return(
+<div className="pg">
+<div className="row">
+<div><h2>Reports</h2><div className="sub">Sales summary</div></div>
+<div style={{display:‘flex’,gap:7}}>{[‘Today’,‘This Week’,‘This Month’].map(r=><button key={r} className={‘btn bsm ‘+(range===r?‘bp’:‘bg’)} onClick={()=>setRange(r)}>{r}</button>)}</div>
+</div>
+{loading?<div className="ld"><div className="sp2"/><span>Loading…</span></div>:<>
+<div className="stats">
+{[{l:‘Revenue’,v:fmt(rev),c:‘var(–pk)’},{l:‘Cash’,v:fmt(cash),c:‘var(–gr)’},{l:‘Card’,v:fmt(card),c:‘var(–bl)’},{l:‘Zelle’,v:fmt(zelle),c:‘var(–pp)’},{l:‘Venmo’,v:fmt(venmo),c:‘var(–yw)’},{l:‘Tips’,v:fmt(tips),c:‘var(–yw)’},{l:‘Tickets’,v:tickets.length,c:‘var(–tx)’}].map(s=>(
+<div className="stat" key={s.l}><div className="sl">{s.l}</div><div className="sv" style={{color:s.c}}>{s.v}</div></div>
+))}
+</div>
+<div style={{display:‘grid’,gridTemplateColumns:‘1fr 1fr’,gap:16}}>
+<div className="card">
+<div className="ct">Employee Breakdown</div>
+{!es.length&&<div className="empty">No data</div>}
+<table><thead><tr><th>Name</th><th>Svcs</th><th>Revenue</th><th>Tips</th></tr></thead>
+<tbody>{es.map(e=>(
+<tr key={e.id}>
+<td><div style={{display:‘flex’,alignItems:‘center’,gap:8}}><span className="ea" style={{background:e.color,width:24,height:24,fontSize:10}}>{(e.name||’?’)[0]}</span>{e.name}</div></td>
+<td style={{color:‘var(–t2)’}}>{e.cnt}</td>
+<td style={{color:‘var(–pk)’,fontWeight:700}}>{fmt(e.svc)}</td>
+<td style={{color:‘var(–yw)’}}>{fmt(e.tip)}</td>
+</tr>
+))}</tbody></table>
+</div>
+<div className="card">
+<div className="ct">Ticket History</div>
+{!tickets.length&&<div className="empty">No tickets</div>}
+<table><thead><tr><th>#</th><th>Customer</th><th>Method</th><th>Total</th></tr></thead>
+<tbody>{tickets.slice(0,15).map(t=>(
+<tr key={t.id}>
+<td style={{color:‘var(–t3)’}}>#{t.number}</td>
+<td style={{fontWeight:500}}>{t.customer_name||‘Walk-in’}</td>
+<td><span className="badge bgr">{t.pay_method||’—’}</span></td>
+<td style={{color:‘var(–gr)’,fontWeight:700}}>{fmt(t.total)}</td>
+</tr>
+))}</tbody></table>
+</div>
+</div>
+</>}
+</div>
+);
+}
+
+function App(){
+const [page,setPage]=useState(‘dashboard’);
+const [employees,setEmployees]=useState([]);
+const [customers,setCustomers]=useState([]);
+const [loading,setLoading]=useState(true);
+const {toast,show:showToast}=useToast();
+useEffect(()=>{
+Promise.all([sb.from(‘employees’).select(’*’).order(‘name’),sb.from(‘customers’).select(’*’).order(‘name’)]).then(([{data:e},{data:c}])=>{
+setEmployees(e||[]);setCustomers(c||[]);setLoading(false);
+});
+},[]);
+if(loading)return(
+<div style={{display:‘flex’,alignItems:‘center’,justifyContent:‘center’,height:‘100vh’,flexDirection:‘column’,gap:16,background:‘var(–bg)’}}>
+<div className="sp2" style={{width:36,height:36,borderWidth:3}}/>
+<div style={{color:‘var(–t3)’,fontFamily:”‘DM Sans’,sans-serif”}}>Loading Love Nails POS…</div>
+</div>
+);
+return(
+<div className="app">
+<div className="side">
+<div className="logo"><h1>Love Nails</h1><p>POS System</p></div>
+<div className="nav">
+{NAV.map(n=>(
+<div key={n.id} className={‘ni’+(page===n.id?’ on’:’’)} onClick={()=>setPage(n.id)}>
+<span>{n.icon}</span>{n.label}
+</div>
+))}
+</div>
+<div className="foot"><div>MVP v1.0</div><div>{toStr()}</div></div>
+</div>
+<div className="main">
+{page===‘dashboard’&&<Dashboard employees={employees}/>}
+{page===‘ticket’&&<NewTicket employees={employees} customers={customers} showToast={showToast} onDone={()=>setPage(‘dashboard’)}/>}
+{page===‘appointments’&&<Appointments employees={employees} showToast={showToast}/>}
+{page===‘customers’&&<Customers showToast={showToast}/>}
+{page===‘employees’&&<Employees employees={employees} setEmployees={setEmployees} showToast={showToast}/>}
+{page===‘reports’&&<Reports employees={employees}/>}
+</div>
+{toast&&<div className="toast"><span>{toast.type===‘error’?‘❌’:‘✅’}</span><span>{toast.msg}</span></div>}
+</div>
+);
+}
+
+const NAV=[{id:‘dashboard’,label:‘Dashboard’,icon:‘🏠’},{id:‘ticket’,label:‘New Ticket’,icon:‘🎫’},{id:‘appointments’,label:‘Appointments’,icon:‘📅’},{id:‘customers’,label:‘Customers’,icon:‘👥’},{id:‘employees’,label:‘Employees’,icon:‘✂️’},{id:‘reports’,label:‘Reports’,icon:‘📊’}];
+
+ReactDOM.createRoot(document.getElementById(‘root’)).render(<App/>);
+</script>
+
+</body>
 </html>
