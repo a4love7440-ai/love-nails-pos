@@ -615,7 +615,7 @@ return h(“div”,{className:“app”},
 h(“div”,{className:“side”},
 h(“div”,{className:“logo”},h(“h1”,null,“Love Nails”),h(“p”,null,“POS System”)),
 h(“div”,{className:“nav”},
-…NAV.map(function(n){return h(“div”,{key:n.id,className:“ni”+(page===n.id?” on”:””),onClick:function(){setPage(n.id);}},h(“span”,null,n.icon),n.label);})
+…(function(n){return h(“div”,{key:n.id,className:“ni”+(page===n.id?” on”:””),onClick:function(){setPage(n.id);}},h(“span”,null,n.icon),n.label);})
 ),
 h(“div”,{className:“foot”},“v1.0 · “,toStr())
 ),
